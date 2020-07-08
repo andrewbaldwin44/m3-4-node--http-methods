@@ -1,4 +1,5 @@
 const { stock, customers } = require('./data/promo.js');
+let userInfo = undefined;
 
 function isOutOfStock(orderObject, orderKey) {
   return orderObject[orderKey] === '0';
@@ -17,15 +18,23 @@ function isInvalidCountry(country) {
 }
 
 function isMissingData(order, size) {
-  if (order === "shirt" && size !== "undefined") return false;
-  else if (order != "undefined" && order != "shirt") return false;
-  else return true;
+  if (order != "undefined") {
+    if (order === "shirt" && size !== "undefined" || order != "shirt") return false;
+    else return true;
+  }
 }
 
 function addNewCustomer(customerInfo) {
-  delete customerInfo.order;
-  delete customerInfo.size;
-  customers.push(customerInfo);
+  customers.push({
+    givenName: customerInfo.givenName,
+    surname: customerInfo.surname,
+    email: customerInfo.email,
+    address: customerInfo.address,
+    city: customerInfo.city,
+    province: customerInfo.province,
+    postcode: customerInfo.postcode,
+    country: customerInfo.country,
+  });
 }
 
 function decrementStock(orderObject, orderKey) {
@@ -47,6 +56,8 @@ function validateForm(req, res) {
   const { order, size, givenName, surname,
     email, address, city, province,
     postcode, country } = req.body;
+
+  userInfo = req.body;
 
   const [orderObject, orderKey] = getOrderData(order, size);
 
@@ -85,4 +96,8 @@ function validateForm(req, res) {
   else res.status(201).json({ "status": "success" });
 }
 
-module.exports = { validateForm };
+const confirmOrder = (req, res) => {
+  res.render('./pages/order-confirmed', { userData: userInfo })
+};
+
+module.exports = { validateForm, confirmOrder };

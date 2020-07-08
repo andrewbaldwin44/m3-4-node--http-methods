@@ -4,7 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
-const { validateForm } = require('./handlers.js')
+const { validateForm, confirmOrder } = require('./formHandler.js');
+
 
 express()
   .use(function (req, res, next) {
@@ -23,6 +24,7 @@ express()
 
   // endpoints
   .post('/order', validateForm)
+  .get('/order-confirmed', confirmOrder)
 
   .get('*', (req, res) => res.send('Dang. 404.'))
   .listen(8000, () => console.log(`Listening on port 8000`));
